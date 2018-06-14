@@ -1,6 +1,6 @@
 # fetch-fx
 
-A Clojure library designed to ... well, that part is up to you.
+A [re-frame](https://github.com/Day8/re-frame) fx handler with Javascript Fetch API.
 
 ## Usage
 

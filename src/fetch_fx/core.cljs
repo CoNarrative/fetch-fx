@@ -1,13 +1,13 @@
-(ns fetch-fx.core)
+(ns fetch-fx.core
   (:require [cljs.spec.alpha :as s]
-            [re-frame.core :as rf])
+            [re-frame.core :as rf]))
 
 
 (s/def ::url string?)
 (s/def ::method string?)
 (s/def ::on-success vector?)
 (s/def ::on-failure vector?)
-(s/def ::response-format #{:edn :text :raw})
+(s/def ::response-format #{:edn :text :blob :raw})
 (s/def ::request-body-format #{:json})
 (s/def ::headers (s/map-of string? any?))
 (s/def ::body (s/or :form-data #(instance? js/FormData %)
@@ -64,6 +64,7 @@
                  (case response-body-format
                    :edn (.json response)
                    :text (.text response)
+                   :blob (.blob response)
                    (.resolve js/Promise (.-body response)))))
         (.then (fn [body]
                  (let [formatted-body (case response-body-format
@@ -77,10 +78,7 @@
         (.catch (fn [err]
                   (rf/dispatch (conj on-failure err)))))))
 
-(defn fetch-effect
+(defn effect
   [request]
   (let [request-maps (if (sequential? request) request [request])]
     (doseq [request request-maps] (fetch request))))
-
-(rf/reg-fx :fetch fetch-effect)
-
